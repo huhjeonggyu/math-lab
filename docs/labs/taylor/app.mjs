@@ -1,4 +1,4 @@
-import {presets,target,partial,converges} from './math.mjs';
+import {presets,target,partial,converges,gibbsPeak} from './math.mjs';
 const $=id=>document.getElementById(id), canvas=$('plot'),ctx=canvas.getContext('2d');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 const state={id:'sine',n:1,playing:!reduced.matches,speed:1,loop:true,view:1,x:2,last:0};
@@ -17,7 +17,10 @@ function prepare(){
   const p=presets[state.id],[xmin,xmax]=range(),[ymin,ymax]=p.yrange;
   bounds={left:width<420?36:43,right:width-14,top:20,bottom:height-32,xmin,xmax,ymin,ymax};
   const count=Math.max(500,Math.floor(width*1.5));
-  cached=Array.from({length:count+1},(_,i)=>{const x=xmin+(xmax-xmin)*i/count;return {x,f:target(state.id,x),s:partial(state.id,x,state.n)};});
+  const xs=Array.from({length:count+1},(_,i)=>xmin+(xmax-xmin)*i/count);
+  // Include jump points and nearby extrema even on a narrow mobile canvas.
+  if(state.id==='fourier')for(let k=Math.ceil(xmin/Math.PI);k<=Math.floor(xmax/Math.PI);k++)for(const delta of [-Math.PI/(2*state.n),0,Math.PI/(2*state.n)]){const x=k*Math.PI+delta;if(x>=xmin&&x<=xmax)xs.push(x);}
+  cached=xs.sort((a,b)=>a-b).map(x=>({x,f:target(state.id,x),s:partial(state.id,x,state.n)}));
 }
 function draw(){
   if(!width||!height)return;
@@ -45,6 +48,7 @@ function draw(){
     }ctx.stroke();ctx.setLineDash([]);
   }
   curve('f',colors.target,[5,5],1.6);curve('s',colors.partial,[],2.6);
+  if(state.id==='fourier'){const peak=gibbsPeak(state.n);ctx.fillStyle=colors.probe;ctx.beginPath();ctx.arc(px(peak.x),py(peak.height),4,0,Math.PI*2);ctx.fill();}
   const sx=px(state.x);ctx.strokeStyle='#c3ccc7';ctx.setLineDash([2,5]);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(sx,b.top);ctx.lineTo(sx,b.bottom);ctx.stroke();ctx.setLineDash([]);
   [[target(state.id,state.x),colors.target],[partial(state.id,state.x,state.n),colors.partial]].forEach(([y,c])=>{
     if(y===null||!Number.isFinite(y)||y<b.ymin||y>b.ymax)return;ctx.fillStyle='#fff';ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();ctx.arc(sx,py(y),4,0,Math.PI*2);ctx.fill();ctx.stroke();
@@ -60,24 +64,29 @@ function updateReadout(){
   $('target-value').textContent=f===null?'정의되지 않음':format(f);
   $('partial-value').textContent=format(s);$('error-value').textContent=f===null?'—':format(Math.abs(s-f));
   const ok=converges(state.id,x);
-  $('point-state').textContent=ok?'수렴 구간 안의 점':'수렴 구간 밖의 점';
+  $('point-state').textContent=state.id==='fourier'?(Math.abs(Math.sin(x))<1e-10?'점프점: 좌우 평균 0으로 수렴':'이 고정된 점에서는 사각파 값으로 수렴'):ok?'수렴 구간 안의 점':'수렴 구간 밖의 점';
   $('point-state').style.color=ok?'#49776d':'#b65537';
+  canvas.setAttribute('aria-label',`${presets[state.id].name}, ${state.n}개 항. x=${x.toFixed(3)}에서 함수값 ${f===null?'정의되지 않음':format(f)}, 부분합 ${format(s)}. ${$('point-state').textContent}.`);
 }
 function status(){
   $('play').textContent=state.playing?'Ⅱ 일시정지':'▶ 재생';
   $('play').setAttribute('aria-pressed',String(state.playing));
-  $('frame-status').textContent=state.playing?'부분합을 재생하는 중':'멈춘 부분합을 살펴보세요';
+  $('play').setAttribute('aria-label',state.playing?'애니메이션 일시정지':'애니메이션 재생');
+  $('frame-status').textContent=state.playing?'부분합을 재생하는 중':'멈춘 부분합을 살펴봐';
 }
 function setN(n,announce=false){
   state.n=Math.max(1,Math.min(presets[state.id].max,Math.round(n)));
   $('n-value').textContent=state.n;$('terms').value=state.n;cached=null;updateReadout();draw();
+  if(state.id==='fourier'){const peak=gibbsPeak(state.n);$('gibbs-location').textContent=peak.x.toFixed(5);$('gibbs-height').textContent=peak.height.toFixed(5);$('gibbs-overshoot').textContent=peak.overshoot.toFixed(5);}
   if(announce)$('announcement').textContent=presets[state.id].name+', '+state.n+'개 항의 부분합';
 }
 function choose(id){
   state.id=id;const p=presets[id];state.n=1;state.x=p.probe;state.view=1;state.last=performance.now();state.playing=!reduced.matches;
   $('series-name').textContent=p.name;$('series-tag').textContent=p.tag;$('formula').innerHTML=p.formula;
   $('convergence').textContent=p.domain;$('hint').textContent=p.hint;$('detail').textContent=p.detail;
-  $('terms').max=p.max;$('max-label').textContent=p.max;$('band-legend').hidden=!p.interval;
+  $('terms').max=p.max;$('max-label').textContent='최대 '+p.max+'항';$('band-legend').hidden=!p.interval;
+  $('gibbs').hidden=id!=='fourier';
+  $('radius-note').textContent=id==='fourier'?'푸리에는 거듭제곱급수의 수렴 반지름을 쓰지 않아.':p.interval?'원점 중심 · 수렴 반지름 R = 1 · 끝점은 따로 확인해.':'원점 중심 · 수렴 반지름 R = ∞';
   $('view').value='1';updateProbeRange();status();setN(1);$('announcement').textContent=p.name+' 선택. '+p.domain;
 }
 function updateProbeRange(){const [lo,hi]=range();$('probe').min=lo;$('probe').max=hi;state.x=Math.max(lo,Math.min(hi,state.x));$('probe').value=state.x;}
@@ -90,6 +99,7 @@ $('speed').addEventListener('change',e=>{state.speed=+e.target.value;state.last=
 $('loop').addEventListener('change',e=>state.loop=e.target.checked);
 $('view').addEventListener('change',e=>{state.view=+e.target.value;updateProbeRange();cached=null;draw();updateReadout();});
 $('probe').addEventListener('input',e=>{state.x=+e.target.value;draw();updateReadout();});
+$('gibbs-probe').addEventListener('click',()=>{state.playing=false;status();state.x=gibbsPeak(state.n).x;$('probe').value=state.x;draw();updateReadout();$('x-value').textContent='x ≈ '+state.x.toFixed(5);});
 canvas.addEventListener('pointermove',e=>{
   if(e.pointerType==='touch'||!bounds)return;
   const r=canvas.getBoundingClientRect(),cx=e.clientX-r.left,b=bounds;

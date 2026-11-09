@@ -6,11 +6,11 @@
  <meta name="description" content="테일러, 최소제곱 다항식, 체비쇼프 보간, 스플라인, 푸리에를 같은 함수 위에서 비교하는 1학년 심화 실험실.">
  <meta name="theme-color" content="#f4f5f0"><link rel="canonical" href="https://huhjeonggyu.github.io/math-lab/labs/approximation/">
  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css"><script type="module" src="app.mjs"></script>
-</head>
+<link rel="stylesheet" href="../../assets/site.css"><meta property="og:title" content="테일러 다음의 함수 근사 · Math Lab"><meta property="og:description" content="테일러, 최소제곱 다항식, 체비쇼프 보간, 스플라인, 푸리에를 같은 함수 위에서 비교하는 1학년 심화 실험실."><meta property="og:url" content="https://huhjeonggyu.github.io/math-lab/labs/approximation/"><meta property="og:type" content="website"><meta property="og:site_name" content="Math Lab · 수학 실험실"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary"></head>
 <body>
- <header><a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">∑</span><span>수학 실험실 <small>MATH LAB</small></span></a><nav aria-label="주 메뉴"><a href="../taylor/">테일러 실험실</a><a href="../../">모든 실험실 ↗</a></nav></header>
+ <header class="lab-header"><a class="brand" href="../../" aria-label="수학 실험실 홈"><span class="brand-mark" aria-hidden="true">∑</span><span>수학 실험실<small>MATH LAB</small></span></a><nav aria-label="실험실 이동"><a href="../../#labs">전체 실험실</a><a href="../sequences/">수열과 급수 →</a></nav></header>
  <main>
-  <section class="hero"><div><p class="eyebrow">LAB 04 · FIRST-YEAR EXPLORATIONS</p><h1>한 점을 넘어,<br><em>함수를 근사하는 법.</em></h1><p class="lead">테일러를 배웠다면 다음 질문은 이거야.<br>“구간 전체에서 잘 맞추려면, 무엇을 바꿔야 할까?”</p></div><aside class="opening"><span class="pill">1학년 심화</span><p>가장 좋은 방법은<br><strong>어디의 오차를 줄일지</strong>에 달려 있어.</p><div class="route"><span>한 점</span><i>→</i><span>구간 전체</span><i>→</i><span>함수의 구조</span></div><a href="#experiment">먼저 그래프로 비교하기 ↓</a></aside></section>
+  <section class="hero"><div><p class="eyebrow">LAB 04 · 1학년 심화</p><h1>한 점을 넘어,<br><em>함수를 근사하는 법.</em></h1><p class="lead">테일러를 배웠다면 다음 질문은 이거야.<br>“구간 전체에서 잘 맞추려면, 무엇을 바꿔야 할까?”</p></div><aside class="opening"><span class="pill">1학년 심화</span><p>가장 좋은 방법은<br><strong>어디의 오차를 줄일지</strong>에 달려 있어.</p><div class="route"><span>한 점</span><i>→</i><span>구간 전체</span><i>→</i><span>함수의 구조</span></div><a href="#experiment">먼저 그래프로 비교하기 ↓</a></aside></section>
   <section class="intro"><strong>테일러가 멀리서는 항상 나쁜 건 아니야.</strong><p>사인이나 지수함수의 테일러 급수는 모든 실수에서 수렴해. 다만 유한한 차수의 테일러 다항식은 <b>한 점에서 도함수를 맞추는 방법</b>이지, 구간 전체의 오차를 최소화한 결과는 아니야.</p></section>
   <section id="experiment" aria-labelledby="experiment-title">
    <div class="section-heading"><div><p class="eyebrow">01 / COMPARE BEFORE YOU CHOOSE</p><h2 id="experiment-title">같은 함수, 다른 근사</h2></div><p>먼저 테일러와 최소제곱을 같은 차수로.</p></div>
@@ -18,7 +18,7 @@
    <div class="workspace">
     <aside class="controls" aria-label="실험 설정">
      <label class="field" for="function">비교할 함수<select id="function"><option value="runge">1 / (1 + 25x²) · 봉우리</option><option value="sine">sin(πx) · 주기함수</option><option value="exponential">eˣ · 비주기함수</option><option value="absolute">|x| · 꺾이는 함수</option></select></label>
-     <div class="field"><label for="degree">다항식 차수 <output id="degree-value" for="degree">n = 6</output></label><input id="degree" type="range" min="2" max="16" step="2" value="6"><p id="size-note" class="micro"></p><button type="button" id="play" class="play" aria-pressed="false">▶ 차수 늘려 보기</button></div>
+     <div class="field"><label for="degree">다항식 차수 <output id="degree-value" for="degree">n = 6</output></label><input id="degree" type="range" min="2" max="16" step="2" value="6"><p id="size-note" class="micro"></p><button type="button" id="play" class="play" aria-pressed="false" aria-label="차수 애니메이션 재생">▶ 차수 늘려 보기</button></div>
      <div class="field"><label for="center">테일러 중심 <output id="center-value" for="center">x₀ = 0</output></label><input id="center" type="range" min="-.75" max=".75" step=".05" value="0"><p id="center-note" class="micro">테일러만 중심점을 바꿔.</p></div>
      <fieldset><legend>함께 볼 근사</legend><div id="method-controls"></div></fieldset>
      <label class="check"><input id="nodes" type="checkbox"> 체비쇼프·스플라인 보간점</label>
@@ -51,5 +51,5 @@
   <section class="synthesis" aria-labelledby="synthesis-title"><p class="eyebrow">04 / ONE IDEA, MANY CHOICES</p><h2 id="synthesis-title">그럼 회귀는 어디에 들어갈까?</h2><p>회귀는 스플라인·푸리에와 경쟁하는 하나의 기저가 아니야.<br><b>어떤 함수들로 표현할지</b>와 <b>계수를 어떻게 정할지</b>는 별개의 선택이야.</p><div class="basis-formula"><math display="block"><mrow><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>≈</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>0</mn></mrow><mi>N</mi></munderover><msub><mi>c</mi><mi>k</mi></msub><msub><mi>φ</mi><mi>k</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></math></div><div class="choice-grid"><div><span>① 기저 φₖ를 선택</span><p>다항식 · B-spline · 사인과 코사인</p></div><div><span>② 계수 cₖ를 결정</span><p>도함수 일치 · 보간 · 최소제곱 · minimax</p></div></div><p>다항식, 스플라인, 푸리에 기저 모두 데이터에 최소제곱으로 맞출 수 있어. 여기서는 잡음 없는 함수 근사를 비교했지만, 이 관점이 선형대수와 통계적 회귀, 머신러닝으로 이어져.</p></section>
   <section class="questions"><div><p class="eyebrow">TRY EXPLAINING IT</p><h2>네 말로 설명해 보기</h2></div><ol><li>봉우리 함수에서 테일러의 중심 오차는 0인데, 구간 전체의 오차는 왜 커질까?</li><li>sin(πx)와 eˣ에서 푸리에의 결과가 다른 이유를 양끝의 연결로 설명할 수 있을까?</li><li>“표본점을 모두 통과한다”와 “평균 오차가 작다”는 같은 말일까?</li></ol></section>
  </main>
- <footer><a href="../../">← 수학 실험실로</a><span>정답 하나를 고르기보다, 근사의 목적을 먼저.</span><a href="https://github.com/huhjeonggyu/math-lab" target="_blank" rel="noopener">소스 코드 ↗</a></footer>
+ <footer class="lab-footer"><span>MATH LAB · LAB 04 · 테일러 다음의 함수 근사</span><a href="../../">실험실 목록으로 →</a><small>업데이트 <time datetime="2026-11-09">2026.11.09</time> · <a href="https://github.com/huhjeonggyu/math-lab" target="_blank" rel="noopener">GitHub ↗</a></small></footer>
 </body></html>

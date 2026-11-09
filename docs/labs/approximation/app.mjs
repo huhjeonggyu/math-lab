@@ -11,7 +11,7 @@ const presets={
 };
 let preset='local';
 $('method-controls').innerHTML=methods.map(m=>`<label class="check" id="label-${m.id}"><input type="checkbox" value="${m.id}" ${selected.has(m.id)?'checked':''}><span class="swatch" style="background:${m.color}"></span>${m.name}</label>`).join('');
-function stop(){running=false;ui.play.textContent='▶ 차수 늘려 보기';ui.play.setAttribute('aria-pressed','false');}
+function stop(){running=false;ui.play.textContent='▶ 차수 늘려 보기';ui.play.setAttribute('aria-pressed','false');ui.play.setAttribute('aria-label','차수 애니메이션 재생');}
 function clearPreset(){preset=null;document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed','false'));}
 function chosen(){return methods.filter(m=>selected.has(m.id)&&models[m.id]);}
 function sizeLabel(id){const n=+ui.degree.value;return id==='spline'?`${n}개 구간 · 각 구간 3차`:id==='fourier'?`${n/2}차 주파수까지`:`${n}차 이하 다항식`;}
@@ -74,7 +74,7 @@ ui.probe.addEventListener('input',()=>{updateValues();draw();});
 ui.scale.addEventListener('change',draw);ui.nodes.addEventListener('change',draw);
 $('method-controls').addEventListener('change',e=>{if(e.target.checked)selected.add(e.target.value);else selected.delete(e.target.value);clearPreset();$('observation').textContent=example.hint;updateValues();draw();});
 document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>{stop();preset=button.dataset.preset;const value=presets[preset];ui.fn.value=value.fn;ui.degree.value=value.degree;ui.center.value='0';ui.probe.value='.6';ui.scale.value='target';ui.nodes.checked=value.nodes;selected=new Set(value.selected);document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));updateModels();}));
-ui.play.addEventListener('click',()=>{if(running){stop();return;}if(+ui.degree.value===16){ui.degree.value='2';updateModels();}running=true;last=performance.now();ui.play.textContent='Ⅱ 잠깐 멈추기';ui.play.setAttribute('aria-pressed','true');});
+ui.play.addEventListener('click',()=>{if(running){stop();return;}if(+ui.degree.value===16){ui.degree.value='2';updateModels();}running=true;last=performance.now();ui.play.textContent='Ⅱ 잠깐 멈추기';ui.play.setAttribute('aria-pressed','true');ui.play.setAttribute('aria-label','차수 애니메이션 일시정지');});
 function frame(t){if(running&&!document.hidden&&t-last>=1400){last=t;ui.degree.value=String(Math.min(16,+ui.degree.value+2));updateModels();if(+ui.degree.value===16)stop();}requestAnimationFrame(frame);}
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});reduced.addEventListener('change',()=>{if(reduced.matches)stop();});
 const observer=new ResizeObserver(draw);observer.observe(ui.curve);observer.observe(ui.error);

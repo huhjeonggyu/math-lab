@@ -13,7 +13,7 @@ for(const [kind,label] of [['finite','유한 구간 · 정적분'],['near','0 �
 function currentBounds(){return bounds(state.example,state.boundary);}
 function spacing(){return state.example.kind==='finite'?'uniform':state.spacing;}
 function boundaryValues(){return state.example.kind==='near'?cutoffs:upperBounds;}
-function setPlaying(value){state.playing=value;lastTick=performance.now();holdUntil=0;$('play').textContent=value?'Ⅱ 일시정지':'▶ 재생';$('play').setAttribute('aria-pressed',String(value));}
+function setPlaying(value){state.playing=value;lastTick=performance.now();holdUntil=0;$('play').textContent=value?'Ⅱ 일시정지':'▶ 재생';$('play').setAttribute('aria-pressed',String(value));$('play').setAttribute('aria-label',value?'애니메이션 일시정지':'애니메이션 재생');}
 function selectExample(example){
  state.example=example;state.n=example.kind==='finite'?4:64;state.boundary=2;state.mode='refine';state.spacing=example.kind==='finite'?'uniform':'geometric';state.barFraction=.35;
  for(const button of document.querySelectorAll('.example-button')){const selected=button.dataset.example===example.id;button.classList.toggle('active',selected);button.setAttribute('aria-pressed',String(selected));}
@@ -51,6 +51,7 @@ function render(){
  if(example.kind!=='finite')$('cutoff-gap').textContent=example.limit===null?'분할을 아무리 늘려도 전체 이상적분의 발산은 바뀌지 않아.':'현재 구간 밖에 남은 정확한 적분 = '+fmt(example.limit-exact);
  $('step').disabled=state.mode==='refine'?state.n===512:state.boundary===boundaryValues().length-1;
  $('area-chart').setAttribute('aria-label',`${example.name}, ${interval}, N=${state.n}, ${methodNames[state.method]} 리만합 ${fmt(data.value)}, 정확한 적분 ${fmt(exact)}.`);
+ $('trend-chart').setAttribute('aria-label',`${example.name}. ${$('trend-note').textContent} 현재 리만합 ${fmt(data.value)}, 정확한 적분 ${fmt(exact)}.`);
  drawArea();drawTrend();updateRectangle();
 }
 function setup(canvas){const w=canvas.clientWidth,h=canvas.clientHeight,dpr=Math.min(devicePixelRatio||1,2);if(w<10||h<10)return null;if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}const c=canvas.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);c.font='10px "Malgun Gothic",sans-serif';c.textBaseline='middle';return {c,w,h};}
@@ -114,4 +115,5 @@ $('area-chart').addEventListener('click',e=>{if(!areaMap)return;const rect=e.cur
 const observer=new ResizeObserver(()=>{if(data){drawArea();drawTrend();}});observer.observe($('area-chart'));observer.observe($('trend-chart'));
 motion.addEventListener('change',()=>{if(motion.matches)setPlaying(false);});document.addEventListener('visibilitychange',()=>{lastTick=performance.now();holdUntil=0;});
 function animate(t){if(state.playing&&!document.hidden){if(atEnd()){if(!state.loop)setPlaying(false);else if(!holdUntil)holdUntil=t+1500;else if(t>=holdUntil)restart();}else if(t-lastTick>=(state.mode==='refine'?200:950)/state.speed){advance();lastTick=t;}}requestAnimationFrame(animate);}
-selectExample(examples[0]);requestAnimationFrame(animate);
+const requestedExample=new URLSearchParams(location.search).get('example');
+selectExample(examples.find(e=>e.id===requestedExample)||examples[0]);requestAnimationFrame(animate);

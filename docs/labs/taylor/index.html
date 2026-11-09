@@ -3,32 +3,29 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f5ef">
-  <title>급수가 움직이다 · Series in Motion</title>
+  <title>테일러와 푸리에 · Math Lab</title>
   <meta name="description" content="함수와 급수를 선택하고 부분합을 재생하며 수렴과 발산을 탐구하는 인터랙티브 미적분 실험실.">
   <link rel="canonical" href="https://huhjeonggyu.github.io/math-lab/labs/taylor/">
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
   <script type="module" src="./app.mjs"></script>
-</head>
+<link rel="stylesheet" href="../../assets/site.css"><meta property="og:title" content="테일러와 푸리에 · Math Lab"><meta property="og:description" content="함수와 급수를 선택하고 부분합을 재생하며 수렴과 발산을 탐구하는 인터랙티브 미적분 실험실."><meta property="og:url" content="https://huhjeonggyu.github.io/math-lab/labs/taylor/"><meta property="og:type" content="website"><meta property="og:site_name" content="Math Lab · 수학 실험실"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary"></head>
 <body>
-<header class="masthead">
-  <a class="brand" href="./" aria-label="급수가 움직이다 홈"><span class="brand-mark" aria-hidden="true">Σ</span><span>급수가 움직이다<small>SERIES IN MOTION</small></span></a>
-  <nav class="lab-nav" aria-label="실험실 이동"><a href="../../">← 전체 실험실</a><a href="../sequences/">수열 · 급수 ↗</a></nav>
-</header>
+<header class="lab-header"><a class="brand" href="../../" aria-label="수학 실험실 홈"><span class="brand-mark" aria-hidden="true">∑</span><span>수학 실험실<small>MATH LAB</small></span></a><nav aria-label="실험실 이동"><a href="../../#labs">전체 실험실</a><a href="../riemann/">리만합과 적분 →</a></nav></header>
 <main>
-  <section class="intro"><p class="eyebrow">AN INTERACTIVE CALCULUS LAB</p><h1>한 항씩, 함수에 가까워지는 순간.</h1><p>급수를 고르고 재생해 보세요. 수렴도, 발산도 움직이면 보입니다.</p></section>
+  <section class="intro"><p class="eyebrow">LAB 02 · 기초</p><h1>한 항씩, 함수에 가까워지는 순간.</h1><p>급수를 고르고 재생해 봐. 항을 늘리며 수렴과 발산의 차이를 살펴보자.</p></section>
   <div class="workspace">
     <aside class="settings" aria-label="급수 선택과 설명">
       <label class="field-label" for="preset">함수 · 급수 선택</label>
       <select id="preset">
-        <option value="sine">sin x · 테일러 급수</option>
+        <optgroup label="원점 중심 · 테일러와 등비급수"><option value="sine">sin x · 테일러 급수</option>
         <option value="exponential">eˣ · 테일러 급수</option>
         <option value="geometric">1 / (1 − x) · 등비급수</option>
         <option value="logarithm">log(1 + x) · 테일러 급수</option>
         <option value="arctangent">arctan x · 테일러 급수</option>
-        <option value="fourier">사각파 · 푸리에 급수</option>
+        </optgroup><optgroup label="주기함수 · 푸리에 급수"><option value="fourier">사각파 · 푸리에 급수</option></optgroup>
       </select>
-      <div class="series-info"><p id="series-tag" class="eyebrow"></p><h2 id="series-name"></h2><div class="formula" id="formula"></div><p id="convergence" class="convergence"></p></div>
-      <details class="observation" id="observation" open><summary>이렇게 관찰해 보세요</summary><p id="hint"></p><p id="detail" class="muted"></p></details>
+      <div class="series-info"><p id="series-tag" class="eyebrow"></p><h2 id="series-name"></h2><div class="formula" id="formula"></div><p id="convergence" class="convergence"></p><p id="radius-note" class="muted"></p></div>
+      <details class="observation" id="observation" open><summary>이렇게 관찰해 봐</summary><p id="hint"></p><p id="detail" class="muted"></p></details>
       <label class="field-label view-label" for="view">그래프 구간</label>
       <select id="view"><option value="1">기본 구간</option><option value="0.5">원점 가까이</option><option value="1.5">더 넓게</option></select>
     </aside>
@@ -36,7 +33,7 @@
       <div class="chart-heading"><div><span class="tiny-heading">PARTIAL SUM</span><h2>항을 더하면 어떤 모양이 될까?</h2></div><div class="n-badge"><span>항 개수</span><strong id="n-value">1</strong></div></div>
       <div class="legend"><span><i class="sample partial"></i>부분합 S<sub>N</sub>(x)</span><span><i class="sample target"></i>비교 함수 f(x)</span><span id="band-legend" hidden><i class="band-sample"></i>수렴 구간</span></div>
       <div class="plot-wrap"><canvas id="plot" role="img" aria-label="부분합과 비교 함수 그래프. 항 개수 슬라이더로 부분합을 바꿀 수 있습니다.">함수와 부분합을 비교하는 그래프입니다.</canvas></div>
-      <div class="chart-note"><span id="frame-status">부분합을 재생하는 중</span><span>재생 중 축 고정 · 화면 밖의 값은 잘려 보일 수 있어요</span></div>
+      <div class="chart-note"><span id="frame-status">부분합을 재생하는 중</span><span>재생 중 축 고정 · 화면 밖의 값은 잘려 보일 수 있어</span></div>
       <div class="transport">
         <button id="play" class="primary" type="button" aria-pressed="true">Ⅱ 일시정지</button>
         <button id="step" type="button">+1항</button>
@@ -44,8 +41,8 @@
         <label class="speed">속도 <select id="speed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
         <label class="loop"><input type="checkbox" id="loop" checked>반복</label>
       </div>
-      <div class="scrubber"><label for="terms">항 개수 N <span>직접 움직여 보기</span></label><input id="terms" type="range" min="1" max="18" value="1" step="1"><div class="range-labels"><span>1</span><span id="max-label">18</span></div></div>
-      <section class="probe" aria-label="한 점에서 값 비교">
+      <div class="scrubber"><label for="terms">항 개수 N <span>직접 움직여 보기</span></label><input id="terms" type="range" min="1" max="18" value="1" step="1"><div class="range-labels"><span>최소 1항</span><span id="max-label">최대 18항</span></div></div>
+      <section class="learning-card" id="gibbs" hidden aria-labelledby="gibbs-title"><span class="prompt-label">FOURIER · 기브스 현상</span><h3 id="gibbs-title">튀어나온 부분은 작아질까, 좁아질까?</h3><p>N을 늘리면 첫 돌출이 점프점 x = 0에 더 가까워져. 하지만 높이는 1에 붙지 않고 약 1.179로 가.</p><div class="gibbs-values"><div><span>첫 돌출 위치</span><strong id="gibbs-location"></strong><small>xₙ = π/(2N)</small></div><div><span>그 점의 부분합</span><strong id="gibbs-height"></strong><small>Sₙ(xₙ)</small></div><div><span>1을 넘는 높이</span><strong id="gibbs-overshoot"></strong><small>→ 약 0.179</small></div></div><button id="gibbs-probe" type="button">첫 돌출점에서 비교하기 →</button><details><summary>각 점에서 수렴하는데, 왜 균등수렴은 아닐까?</summary><p>사각파의 점프점 값을 0으로 정하면 모든 고정된 x에서 Sₙ(x) → f(x)야. 하지만 첫 돌출을 따라가면 xₙ도 N과 함께 움직여. 그 지점의 오차는 0으로 가지 않아.</p><div class="gibbs-bound"><b>전체 최대 오차의 하한: 모든 N에 대해 sup<sub>x∈[−π,π]</sub>|Sₙ(x) − f(x)| ≥ 1.</b><p>N을 고정하면 Sₙ은 연속이고 Sₙ(0) = 0이야. x → 0⁺에서 f(x) = 1이므로 오차는 1에 가까워져. 그래서 돌출 초과분 약 0.179를 전체 최대 오차라고 부르면 안 돼. 유한한 격자는 점프 바로 옆의 큰 오차를 놓칠 수도 있어.</p></div></details><p class="source-note"><a href="https://dlmf.nist.gov/6.16" target="_blank" rel="noopener">더 읽기: NIST DLMF · Gibbs phenomenon ↗</a></p></section><section class="probe" aria-label="한 점에서 값 비교">
         <div class="probe-control"><label for="probe">한 점에서 비교 <strong id="x-value">x = 2.00</strong></label><input type="range" id="probe" min="-6.3" max="6.3" step=".01" value="2"><span id="point-state"></span></div>
         <div class="readout"><span>f(x)</span><strong id="target-value">—</strong></div>
         <div class="readout"><span>S<sub>N</sub>(x)</span><strong id="partial-value">—</strong></div>
@@ -53,8 +50,8 @@
       </section>
     </section>
   </div>
-  <p class="bottom-note">N은 더한 항의 개수입니다. 급수의 수렴은 각 x에서 따로 판단합니다.</p>
+  <details class="convergence-reference"><summary>여섯 급수의 수렴 구간·끝점을 한눈에</summary><p>테일러·등비급수는 모두 원점 중심이야. 초록 음영은 −1 &lt; x &lt; 1을 표시하며, 끝점 포함 여부는 아래 표와 선택한 점의 판정을 확인해.</p><div class="table-scroll"><table class="limit-table"><thead><tr><th>급수</th><th>수렴 반지름 R</th><th>수렴 구간 / 끝점</th></tr></thead><tbody><tr><td>sin x, eˣ</td><td>∞</td><td>모든 실수</td></tr><tr><td>1/(1−x)</td><td>1</td><td>(−1, 1) · 양끝 모두 발산</td></tr><tr><td>log(1+x)</td><td>1</td><td>(−1, 1] · x = 1에서 log 2, x = −1에서 발산</td></tr><tr><td>arctan x</td><td>1</td><td>[−1, 1] · 양끝에서 ±π/4</td></tr><tr><td>사각파 · 푸리에</td><td>거듭제곱급수의 반지름 개념을 쓰지 않아</td><td>각 고정된 x에서 수렴 · 점프점 값은 0으로 정의</td></tr></tbody></table></div></details><p class="lab-next">한 점의 수렴과 구간 전체의 근사 오차는 다를 수 있어. <a href="../approximation/">같은 차수의 테일러와 최소제곱 비교하기 →</a></p><p class="bottom-note">N은 더한 항의 개수야. 급수의 수렴은 각 x에서 따로 판단해.</p>
   <div id="announcement" class="sr-only" aria-live="polite"></div>
 </main>
-<noscript>그래프를 재생하려면 브라우저의 JavaScript를 켜 주세요.</noscript>
-</body></html>
+<noscript>그래프를 재생하려면 브라우저의 JavaScript를 켜 줘.</noscript>
+<footer class="lab-footer"><span>MATH LAB · LAB 02 · 테일러와 푸리에</span><a href="../../">실험실 목록으로 →</a><small>업데이트 <time datetime="2026-11-09">2026.11.09</time> · <a href="https://github.com/huhjeonggyu/math-lab" target="_blank" rel="noopener">GitHub ↗</a></small></footer></body></html>

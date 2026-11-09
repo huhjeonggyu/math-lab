@@ -13,9 +13,14 @@ for(const example of examples){
 function play(value){
  state.playing=value;lastTick=performance.now();holdUntil=0;
  $('play').textContent=value?'Ⅱ 일시정지':'▶ 재생';$('play').setAttribute('aria-pressed',String(value));
+ $('play').setAttribute('aria-label',value?'애니메이션 일시정지':'애니메이션 재생');
 }
 function selectExample(example){
  state.example=example;state.n=1;data=calculate(example,state.max);
+ $('harmonic-prediction').hidden=example.id!=='harmonic';
+ $('prediction-reason').hidden=true;$('prediction-reveal').setAttribute('aria-expanded','false');
+ $('prediction-response').textContent='먼저 예상해 보고, 항을 늘리며 두 그래프를 비교해 봐.';
+ document.querySelectorAll('[data-prediction]').forEach(b=>b.setAttribute('aria-pressed','false'));
  for(const button of document.querySelectorAll('.example-button')){
   const active=button.dataset.example===example.id;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));
  }
@@ -36,7 +41,7 @@ function refreshBand(){
  for(const kind of ['sequence','series']){
   const el=$(kind+'-band-note'),threshold=tailIndex(state.example.id,kind,state.epsilon);
   el.hidden=!state.band;
-  el.textContent=threshold===null?'유한한 극한이 없어 수렴 띠를 그리지 않아.':`ε = ${state.epsilon} · n ≥ ${threshold}이면 이후 모든 점이 띠 안에 있어.${threshold>state.max?' 관찰 범위를 늘려 봐.':''}`;
+  el.textContent=threshold===null?'유한한 극한이 없어 ε-띠를 그리지 않아.':`ε = ${state.epsilon} · n ≥ ${threshold}이면 이후 모든 점이 띠 안에 있어.${threshold>state.max?' 관찰 범위를 늘려 봐.':''}`;
  }
 }
 function render(){
@@ -120,7 +125,7 @@ $('speed').addEventListener('change',e=>{state.speed=Number(e.target.value);last
 $('loop').addEventListener('change',e=>{state.loop=e.target.checked;});
 $('horizon').addEventListener('change',e=>{
  play(false);state.max=Number(e.target.value);state.n=Math.min(state.n,state.max);data=calculate(state.example,state.max);
- $('index').max=state.max;$('horizon-label').textContent=state.max.toLocaleString('en-US');refreshBand();render();
+ $('index').max=state.max;$('horizon-label').textContent='최대 '+state.max.toLocaleString('en-US');refreshBand();render();
 });
 $('show-band').addEventListener('change',e=>{state.band=e.target.checked;refreshBand();render();});
 $('epsilon').addEventListener('change',e=>{state.epsilon=Number(e.target.value);refreshBand();render();});
@@ -141,4 +146,13 @@ function animate(time){
  }
  requestAnimationFrame(animate);
 }
+document.querySelectorAll('[data-prediction]').forEach(button=>button.addEventListener('click',()=>{
+ play(false);document.querySelectorAll('[data-prediction]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+ $('prediction-response').textContent=`‘${button.textContent}’라고 예상했어. 1,000개 항에서 비교한 뒤 이유를 확인해 봐.`;
+}));
+$('prediction-experiment').addEventListener('click',()=>{
+ play(false);state.max=1000;state.n=1000;data=calculate(state.example,state.max);$('horizon').value='1000';$('index').max=1000;$('horizon-label').textContent='최대 1,000';refreshBand();render();
+ $('prediction-response').textContent='N = 1,000에서 항은 0.001, 부분합은 약 7.485야. 항이 작아진다는 사실만으로 합의 수렴을 판단할 수 있을까?';
+});
+$('prediction-reveal').addEventListener('click',()=>{const expanded=$('prediction-reason').hidden;$('prediction-reason').hidden=!expanded;$('prediction-reveal').setAttribute('aria-expanded',String(expanded));});
 selectExample(examples[0]);requestAnimationFrame(animate);
