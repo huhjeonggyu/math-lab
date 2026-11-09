@@ -1,4 +1,5 @@
-import {examples,calculate,math,tailIndex,formatNumber as fmt} from './math.mjs';
+import {tr,initLanguage,restoredExperiment} from '../../assets/i18n.mjs';
+import {examples,calculate,math,tailIndex,formatNumber as fmt} from './math.mjs?v=20261109-i18n';
 const $=id=>document.getElementById(id);
 const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
 const state={example:examples[0],n:1,max:100,speed:1,playing:false,loop:true,band:false,epsilon:.1};
@@ -12,14 +13,14 @@ for(const example of examples){
 
 function play(value){
  state.playing=value;lastTick=performance.now();holdUntil=0;
- $('play').textContent=value?'Ⅱ 일시정지':'▶ 재생';$('play').setAttribute('aria-pressed',String(value));
- $('play').setAttribute('aria-label',value?'애니메이션 일시정지':'애니메이션 재생');
+ $('play').textContent=value?tr("Ⅱ 일시정지"):tr("▶ 재생");$('play').setAttribute('aria-pressed',String(value));
+ $('play').setAttribute('aria-label',value?tr("애니메이션 일시정지"):tr("애니메이션 재생"));
 }
 function selectExample(example){
  state.example=example;state.n=1;data=calculate(example,state.max);
  $('harmonic-prediction').hidden=example.id!=='harmonic';
  $('prediction-reason').hidden=true;$('prediction-reveal').setAttribute('aria-expanded','false');
- $('prediction-response').textContent='먼저 예상해 보고, 항을 늘리며 두 그래프를 비교해 봐.';
+ $('prediction-response').textContent=tr("먼저 예상해 보고, 항을 늘리며 두 그래프를 비교해 봐.");
  document.querySelectorAll('[data-prediction]').forEach(b=>b.setAttribute('aria-pressed','false'));
  for(const button of document.querySelectorAll('.example-button')){
   const active=button.dataset.example===example.id;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));
@@ -29,11 +30,11 @@ function selectExample(example){
  $('sequence-status').textContent=example.sequence;$('sequence-status').classList.toggle('diverge',example.seqLimit===null);
  $('series-status').textContent=example.series;$('series-status').classList.toggle('diverge',example.sumLimit===null);
  $('sequence-conclusion').textContent=example.sequence;
- $('series-conclusion').textContent=example.series+(example.sumKind==='absolute'?' · 절대수렴':example.sumKind==='conditional'?' · 조건수렴':'');
+ $('series-conclusion').textContent=example.series+(example.sumKind==='absolute'?tr(" · 절대수렴"):example.sumKind==='conditional'?tr(" · 조건수렴"):'');
  $('sequence-why').textContent=example.sequenceWhy;$('series-why').textContent=example.seriesWhy;$('evidence').innerHTML=example.evidence;
  $('takeaway').textContent=example.takeaway;
- $('sequence-target').textContent=example.seqLimit===null?'유한한 극한 없음':`점선: 극한 ${fmt(example.seqLimit)}`;
- $('series-target').textContent=example.sumLimit===null?'유한한 극한 없음':`점선: 극한 ${fmt(example.sumLimit)}`;
+ $('sequence-target').textContent=example.seqLimit===null?tr("유한한 극한 없음"):tr("점선: 극한 {0}", [fmt(example.seqLimit)]);
+ $('series-target').textContent=example.sumLimit===null?tr("유한한 극한 없음"):tr("점선: 극한 {0}", [fmt(example.sumLimit)]);
  refreshBand();play(!motion.matches);render();
 }
 function refreshBand(){
@@ -41,7 +42,7 @@ function refreshBand(){
  for(const kind of ['sequence','series']){
   const el=$(kind+'-band-note'),threshold=tailIndex(state.example.id,kind,state.epsilon);
   el.hidden=!state.band;
-  el.textContent=threshold===null?'유한한 극한이 없어 ε-띠를 그리지 않아.':`ε = ${state.epsilon} · n ≥ ${threshold}이면 이후 모든 점이 띠 안에 있어.${threshold>state.max?' 관찰 범위를 늘려 봐.':''}`;
+  el.textContent=threshold===null?tr("유한한 극한이 없어 ε-띠를 그리지 않아."):tr("ε = {0} · n ≥ {1}이면 이후 모든 점이 띠 안에 있어.{2}", [state.epsilon, threshold, threshold>state.max?tr(" 관찰 범위를 늘려 봐."):'']);
  }
 }
 function render(){
@@ -49,8 +50,8 @@ function render(){
  $('n-display').textContent=n;$('index-label').textContent=n;$('index').value=n;
  $('previous-value').textContent=fmt(prev);$('term-value').textContent=term<0?`(${fmt(term)})`:fmt(term);$('sum-value').textContent=fmt(sum);
  $('step').disabled=n>=state.max;
- $('sequence-chart').setAttribute('aria-label',`${state.example.name}: n=${n}, 항 a_n=${fmt(term)}. ${state.example.sequence}.`);
- $('series-chart').setAttribute('aria-label',`${state.example.name}: n=${n}, 부분합 S_n=${fmt(sum)}. ${state.example.series}.`);
+ $('sequence-chart').setAttribute('aria-label',tr("{0}: n={1}, 항 a_n={2}. {3}.", [state.example.name, n, fmt(term), state.example.sequence]));
+ $('series-chart').setAttribute('aria-label',tr("{0}: n={1}, 부분합 S_n={2}. {3}.", [state.example.name, n, fmt(sum), state.example.series]));
  drawChart($('sequence-chart'),'sequence');drawChart($('series-chart'),'series');
 }
 function tickLabel(value){
@@ -125,12 +126,12 @@ $('speed').addEventListener('change',e=>{state.speed=Number(e.target.value);last
 $('loop').addEventListener('change',e=>{state.loop=e.target.checked;});
 $('horizon').addEventListener('change',e=>{
  play(false);state.max=Number(e.target.value);state.n=Math.min(state.n,state.max);data=calculate(state.example,state.max);
- $('index').max=state.max;$('horizon-label').textContent='최대 '+state.max.toLocaleString('en-US');refreshBand();render();
+ $('index').max=state.max;$('horizon-label').textContent=tr("최대 {0}", [state.max.toLocaleString('en-US')]);refreshBand();render();
 });
 $('show-band').addEventListener('change',e=>{state.band=e.target.checked;refreshBand();render();});
 $('epsilon').addEventListener('change',e=>{state.epsilon=Number(e.target.value);refreshBand();render();});
 for(const id of ['sequence-chart','series-chart']){
- $(id).title='그래프를 누르면 해당 n으로 이동해';
+ $(id).title=tr("그래프를 누르면 해당 n으로 이동해");
  $(id).addEventListener('click',e=>{const rect=e.currentTarget.getBoundingClientRect();play(false);state.n=Math.max(1,Math.min(state.max,Math.round((e.clientX-rect.left-45)/(rect.width-60)*state.max)));render();});
 }
 const observer=new ResizeObserver(()=>render());observer.observe($('sequence-chart'));observer.observe($('series-chart'));
@@ -148,11 +149,27 @@ function animate(time){
 }
 document.querySelectorAll('[data-prediction]').forEach(button=>button.addEventListener('click',()=>{
  play(false);document.querySelectorAll('[data-prediction]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
- $('prediction-response').textContent=`‘${button.textContent}’라고 예상했어. 1,000개 항에서 비교한 뒤 이유를 확인해 봐.`;
+ $('prediction-response').textContent=tr("‘{0}’라고 예상했어. 1,000개 항에서 비교한 뒤 이유를 확인해 봐.", [tr(button.textContent)]);
 }));
 $('prediction-experiment').addEventListener('click',()=>{
- play(false);state.max=1000;state.n=1000;data=calculate(state.example,state.max);$('horizon').value='1000';$('index').max=1000;$('horizon-label').textContent='최대 1,000';refreshBand();render();
- $('prediction-response').textContent='N = 1,000에서 항은 0.001, 부분합은 약 7.485야. 항이 작아진다는 사실만으로 합의 수렴을 판단할 수 있을까?';
+ play(false);state.max=1000;state.n=1000;data=calculate(state.example,state.max);$('horizon').value='1000';$('index').max=1000;$('horizon-label').textContent=tr("최대 1,000");refreshBand();render();
+ $('prediction-response').textContent=tr("N = 1,000에서 항은 0.001, 부분합은 약 7.485야. 항이 작아진다는 사실만으로 합의 수렴을 판단할 수 있을까?");
 });
 $('prediction-reveal').addEventListener('click',()=>{const expanded=$('prediction-reason').hidden;$('prediction-reason').hidden=!expanded;$('prediction-reveal').setAttribute('aria-expanded',String(expanded));});
 selectExample(examples[0]);requestAnimationFrame(animate);
+
+
+const restored=restoredExperiment();
+if(restored&&examples.some(e=>e.id===restored.example)){
+ selectExample(examples.find(e=>e.id===restored.example));
+ const {prediction,predictionObserved,revealed,...saved}=restored;
+ Object.assign(state,saved,{example:state.example});
+ data=calculate(state.example,state.max);
+ $('horizon').value=state.max;$('index').max=state.max;$('horizon-label').textContent=tr('최대 {0}',[state.max.toLocaleString('en-US')]);
+ $('speed').value=state.speed;$('loop').checked=state.loop;$('show-band').checked=state.band;$('epsilon').value=state.epsilon;
+ if(prediction)document.querySelector(`[data-prediction="${prediction}"]`)?.click();
+ if(predictionObserved)$('prediction-response').textContent=tr('N = 1,000에서 항은 0.001, 부분합은 약 7.485야. 항이 작아진다는 사실만으로 합의 수렴을 판단할 수 있을까?');
+ $('prediction-reason').hidden=!revealed;$('prediction-reveal').setAttribute('aria-expanded',String(revealed));
+ refreshBand();render();play(saved.playing);
+}
+initLanguage({snapshot:()=>({...state,example:state.example.id,prediction:document.querySelector('[data-prediction][aria-pressed="true"]')?.dataset.prediction,predictionObserved:$('prediction-response').textContent.includes('N = 1,000'),revealed:!$('prediction-reason').hidden})});

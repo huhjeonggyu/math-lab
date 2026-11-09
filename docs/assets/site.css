@@ -1,4 +1,14 @@
 /* Shared identity and small learning components across the four labs. */
+.language-switch{display:flex;flex:0 0 auto;gap:2px;border:1px solid #cbd6c6;border-radius:8px;padding:3px;background:#fff}
+.language-switch button{font:500 12px/1.5 Inter,"Malgun Gothic",sans-serif;min-height:34px;border:0;border-radius:5px;background:transparent;color:#52685d;padding:5px 10px;cursor:pointer;white-space:nowrap}
+.language-switch button[aria-pressed=true]{color:#fff;background:#284734}
+.language-switch button:focus-visible{outline:3px solid #83b9d3;outline-offset:2px}
+header.lab-header nav{margin-left:auto}
+html[lang=en] body{letter-spacing:0}
+html[lang=en] .hero h1{line-height:1.12}
+html[lang=en] .lab-header .brand small{letter-spacing:.12em}
+html[lang=en] .group-label,html[lang=en] .example-button,html[lang=en] .status-badge{white-space:normal}
+@media(max-width:850px){header.lab-header{height:auto!important;min-height:88px;flex-wrap:wrap;padding-top:12px!important;padding-bottom:12px!important;gap:10px!important}header.lab-header .brand{margin-right:auto}header.lab-header nav{order:3;flex-basis:100%;flex-direction:row!important;justify-content:flex-end;flex-wrap:wrap;gap:8px 18px!important;margin:0!important}.language-switch button{font-size:11px;padding:4px 8px}}
 [hidden]{display:none!important}
 header.lab-header{max-width:1440px;margin:0 auto;height:88px;padding:0 40px;border-bottom:1px solid #dce3d9;display:flex;align-items:center;justify-content:space-between;gap:16px;font-family:Inter,"Pretendard","Malgun Gothic",sans-serif}
 .lab-header .brand{display:flex;align-items:center;gap:11px;font-size:16px;font-weight:650;line-height:1.5;letter-spacing:-.025em;text-decoration:none;color:#182c30}

@@ -32,6 +32,7 @@ node tests/taylor.test.mjs
 node tests/riemann.test.mjs
 node tests/approximation.test.mjs
 node tests/site.test.mjs
+node tests/i18n.test.mjs
 ```
 
 ## GitHub Pages
@@ -91,3 +92,14 @@ tests/                # 수학 계산 및 사이트 경로 확인
 - 리만합의 `?example=inverseTail` 링크는 `1/x`의 무한 구간 예제를 바로 엽니다. 알 수 없는 예제 ID는 기본 예제로 돌아갑니다.
 - 테일러 랩의 수렴 반지름·끝점 표와 사각파 진단을 활용합니다. Gibbs 첫 돌출 초과분 약 0.179와 전체 구간의 sup 오차 하한 1을 구별합니다. 브라우저의 유한 격자 최대값을 정확한 sup으로 표시하지 않습니다.
 - 헤더/공통 학습 컴포넌트는 `docs/assets/site.css`를 공유하며, 네 랩의 로고는 모두 홈으로 이동합니다.
+
+## 한국어 / English
+
+- 모든 페이지 오른쪽 위에서 한국어와 English를 전환할 수 있습니다.
+- 처음 방문하면 브라우저 언어를 사용합니다. 한국어 브라우저는 한국어, 그 외에는 영어로 시작합니다.
+- 선택한 언어를 브라우저에 기억하며, 내부 링크의 `?lang=ko` 또는 `?lang=en`으로도 전달합니다. URL의 언어 설정이 저장된 설정보다 우선합니다.
+- 언어 전환은 페이지를 다시 불러오며 현재 예제, 조절값, 재생 상태를 유지합니다. `history.state`를 이용해 별도 서버 없이 복원합니다.
+- `docs/assets/i18n.mjs`가 언어 선택과 공통 UI를, `docs/assets/en.mjs`가 영어 번역을 담당합니다. 한국어 원문을 키로 쓰며, 계산식과 예제 ID는 공통으로 유지합니다.
+- 번역은 사이트에 포함되어 있습니다. 외부 번역 서비스나 API 키를 사용하지 않습니다.
+
+English entry: https://huhjeonggyu.github.io/math-lab/?lang=en

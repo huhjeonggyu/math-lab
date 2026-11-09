@@ -1,4 +1,5 @@
-import {presets,target,partial,converges,gibbsPeak} from './math.mjs';
+import {tr,initLanguage,restoredExperiment} from '../../assets/i18n.mjs';
+import {presets,target,partial,converges,gibbsPeak} from './math.mjs?v=20261109-i18n';
 const $=id=>document.getElementById(id), canvas=$('plot'),ctx=canvas.getContext('2d');
 const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
 const state={id:'sine',n:1,playing:!reduced.matches,speed:1,loop:true,view:1,x:2,last:0};
@@ -61,33 +62,33 @@ function draw(){
 function updateReadout(){
   const x=state.x,f=target(state.id,x),s=partial(state.id,x,state.n);
   $('x-value').textContent='x = '+x.toFixed(2);
-  $('target-value').textContent=f===null?'정의되지 않음':format(f);
+  $('target-value').textContent=f===null?tr("정의되지 않음"):format(f);
   $('partial-value').textContent=format(s);$('error-value').textContent=f===null?'—':format(Math.abs(s-f));
   const ok=converges(state.id,x);
-  $('point-state').textContent=state.id==='fourier'?(Math.abs(Math.sin(x))<1e-10?'점프점: 좌우 평균 0으로 수렴':'이 고정된 점에서는 사각파 값으로 수렴'):ok?'수렴 구간 안의 점':'수렴 구간 밖의 점';
+  $('point-state').textContent=state.id==='fourier'?(Math.abs(Math.sin(x))<1e-10?tr("점프점: 좌우 평균 0으로 수렴"):tr("이 고정된 점에서는 사각파 값으로 수렴")):ok?tr("수렴 구간 안의 점"):tr("수렴 구간 밖의 점");
   $('point-state').style.color=ok?'#49776d':'#b65537';
-  canvas.setAttribute('aria-label',`${presets[state.id].name}, ${state.n}개 항. x=${x.toFixed(3)}에서 함수값 ${f===null?'정의되지 않음':format(f)}, 부분합 ${format(s)}. ${$('point-state').textContent}.`);
+  canvas.setAttribute('aria-label',tr("{0}, {1}개 항. x={2}에서 함수값 {3}, 부분합 {4}. {5}.", [presets[state.id].name, state.n, x.toFixed(3), f===null?tr("정의되지 않음"):format(f), format(s), $('point-state').textContent]));
 }
 function status(){
-  $('play').textContent=state.playing?'Ⅱ 일시정지':'▶ 재생';
+  $('play').textContent=state.playing?tr("Ⅱ 일시정지"):tr("▶ 재생");
   $('play').setAttribute('aria-pressed',String(state.playing));
-  $('play').setAttribute('aria-label',state.playing?'애니메이션 일시정지':'애니메이션 재생');
-  $('frame-status').textContent=state.playing?'부분합을 재생하는 중':'멈춘 부분합을 살펴봐';
+  $('play').setAttribute('aria-label',state.playing?tr("애니메이션 일시정지"):tr("애니메이션 재생"));
+  $('frame-status').textContent=state.playing?tr("부분합을 재생하는 중"):tr("멈춘 부분합을 살펴봐");
 }
 function setN(n,announce=false){
   state.n=Math.max(1,Math.min(presets[state.id].max,Math.round(n)));
   $('n-value').textContent=state.n;$('terms').value=state.n;cached=null;updateReadout();draw();
   if(state.id==='fourier'){const peak=gibbsPeak(state.n);$('gibbs-location').textContent=peak.x.toFixed(5);$('gibbs-height').textContent=peak.height.toFixed(5);$('gibbs-overshoot').textContent=peak.overshoot.toFixed(5);}
-  if(announce)$('announcement').textContent=presets[state.id].name+', '+state.n+'개 항의 부분합';
+  if(announce)$('announcement').textContent=tr("{0}, {1}개 항의 부분합", [presets[state.id].name, state.n]);
 }
 function choose(id){
   state.id=id;const p=presets[id];state.n=1;state.x=p.probe;state.view=1;state.last=performance.now();state.playing=!reduced.matches;
   $('series-name').textContent=p.name;$('series-tag').textContent=p.tag;$('formula').innerHTML=p.formula;
   $('convergence').textContent=p.domain;$('hint').textContent=p.hint;$('detail').textContent=p.detail;
-  $('terms').max=p.max;$('max-label').textContent='최대 '+p.max+'항';$('band-legend').hidden=!p.interval;
+  $('terms').max=p.max;$('max-label').textContent=tr("최대 {0}항", [p.max]);$('band-legend').hidden=!p.interval;
   $('gibbs').hidden=id!=='fourier';
-  $('radius-note').textContent=id==='fourier'?'푸리에는 거듭제곱급수의 수렴 반지름을 쓰지 않아.':p.interval?'원점 중심 · 수렴 반지름 R = 1 · 끝점은 따로 확인해.':'원점 중심 · 수렴 반지름 R = ∞';
-  $('view').value='1';updateProbeRange();status();setN(1);$('announcement').textContent=p.name+' 선택. '+p.domain;
+  $('radius-note').textContent=id==='fourier'?tr("푸리에는 거듭제곱급수의 수렴 반지름을 쓰지 않아."):p.interval?tr("원점 중심 · 수렴 반지름 R = 1 · 끝점은 따로 확인해."):tr("원점 중심 · 수렴 반지름 R = ∞");
+  $('view').value='1';updateProbeRange();status();setN(1);$('announcement').textContent=tr("{0} 선택. {1}", [p.name, p.domain]);
 }
 function updateProbeRange(){const [lo,hi]=range();$('probe').min=lo;$('probe').max=hi;state.x=Math.max(lo,Math.min(hi,state.x));$('probe').value=state.x;}
 $('preset').addEventListener('change',e=>choose(e.target.value));
@@ -130,3 +131,12 @@ choose(state.id);requestAnimationFrame(animate);
 const compact=window.matchMedia("(max-width: 760px)");
 function layoutDetails(){ $("observation").open=!compact.matches; }
 layoutDetails();compact.addEventListener("change",layoutDetails);
+
+
+const restored=restoredExperiment();
+if(restored&&presets[restored.id]){
+ choose(restored.id);Object.assign(state,restored);state.last=performance.now();
+ $('preset').value=state.id;$('view').value=state.view;$('speed').value=state.speed;$('loop').checked=state.loop;
+ updateProbeRange();status();setN(state.n);
+}
+initLanguage({snapshot:()=>({...state})});

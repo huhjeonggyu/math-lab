@@ -1,25 +1,26 @@
+import {tr} from '../../assets/i18n.mjs';
 export const math=body=>`<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow>${body}</mrow></math>`;
 export const functions=[
- {id:'runge',name:'뾰족한 봉우리',formula:'1 / (1 + 25x²)',f:x=>1/(1+25*x*x),range:[0,1],
-  hint:'원점 중심 테일러 급수는 |x| < 0.2에서만 함수로 수렴해. 원점 부근에서 정확해도 [-1, 1] 전체의 근사는 나쁠 수 있어.',
+ {id:'runge',name:tr("뾰족한 봉우리"),formula:'1 / (1 + 25x²)',f:x=>1/(1+25*x*x),range:[0,1],
+  hint:tr("원점 중심 테일러 급수는 |x| < 0.2에서만 함수로 수렴해. 원점 부근에서 정확해도 [-1, 1] 전체의 근사는 나쁠 수 있어."),
   taylor:(degree,c)=>{const out=[1/(1+25*c*c)];for(let k=1;k<=degree;k++)out[k]=-(50*c*out[k-1]+(k>1?25*out[k-2]:0))/(1+25*c*c);return out;},
   radius:c=>Math.sqrt(c*c+1/25)},
- {id:'sine',name:'매끄러운 주기함수',formula:'sin(πx)',f:x=>Math.sin(Math.PI*x),range:[-1,1],
-  hint:'주기가 2인 사인 함수야. 푸리에에서는 첫 번째 사인 항 하나로 정확히 표현할 수 있어. 테일러도 차수를 높이면 전체 구간에서 좋아져.',
+ {id:'sine',name:tr("매끄러운 주기함수"),formula:'sin(πx)',f:x=>Math.sin(Math.PI*x),range:[-1,1],
+  hint:tr("주기가 2인 사인 함수야. 푸리에에서는 첫 번째 사인 항 하나로 정확히 표현할 수 있어. 테일러도 차수를 높이면 전체 구간에서 좋아져."),
   taylor:(degree,c)=>{let scale=1;return Array.from({length:degree+1},(_,k)=>{if(k)scale*=Math.PI/k;return scale*Math.sin(Math.PI*c+k*Math.PI/2);});},radius:()=>Infinity},
- {id:'exponential',name:'주기적이지 않은 매끄러운 함수',formula:'eˣ',f:Math.exp,range:[Math.exp(-1),Math.E],
-  hint:'테일러 급수는 모든 실수에서 수렴해. 반면 푸리에는 양끝을 이어 주기 2로 반복하므로 경계에 점프가 생겨. 끝점 오차와 경계 근처 진동을 봐.',
+ {id:'exponential',name:tr("주기적이지 않은 매끄러운 함수"),formula:'eˣ',f:Math.exp,range:[Math.exp(-1),Math.E],
+  hint:tr("테일러 급수는 모든 실수에서 수렴해. 반면 푸리에는 양끝을 이어 주기 2로 반복하므로 경계에 점프가 생겨. 끝점 오차와 경계 근처 진동을 봐."),
   taylor:(degree,c)=>{let value=Math.exp(c);return Array.from({length:degree+1},(_,k)=>{if(k)value/=k;return value;});},radius:()=>Infinity},
- {id:'absolute',name:'원점에서 꺾이는 함수',formula:'|x|',f:Math.abs,range:[0,1],
-  hint:'|x|는 원점에서 미분되지 않아 원점 중심 테일러 전개를 만들 수 없어. 매끄러운 스플라인도 꺾인 모양을 정확히 그대로 재현하는 건 아니야.',
+ {id:'absolute',name:tr("원점에서 꺾이는 함수"),formula:'|x|',f:Math.abs,range:[0,1],
+  hint:tr("|x|는 원점에서 미분되지 않아 원점 중심 테일러 전개를 만들 수 없어. 매끄러운 스플라인도 꺾인 모양을 정확히 그대로 재현하는 건 아니야."),
   taylor:()=>null,radius:()=>null}
 ];
 export const methods=[
- {id:'taylor',name:'테일러',color:'#c66a39',dash:[7,4]},
- {id:'leastSquares',name:'최소제곱 다항식',color:'#2679a3',dash:[]},
- {id:'chebyshev',name:'체비쇼프 보간',color:'#8c6bb0',dash:[3,3]},
- {id:'spline',name:'3차 스플라인',color:'#398268',dash:[]},
- {id:'fourier',name:'푸리에',color:'#ad8a2a',dash:[9,3,2,3]}
+ {id:'taylor',name:tr("테일러"),color:'#c66a39',dash:[7,4]},
+ {id:'leastSquares',name:tr("최소제곱 다항식"),color:'#2679a3',dash:[]},
+ {id:'chebyshev',name:tr("체비쇼프 보간"),color:'#8c6bb0',dash:[3,3]},
+ {id:'spline',name:tr("3차 스플라인"),color:'#398268',dash:[]},
+ {id:'fourier',name:tr("푸리에"),color:'#ad8a2a',dash:[9,3,2,3]}
 ];
 export function chebBasis(x,degree){const values=[1];if(degree>0)values.push(x);for(let k=2;k<=degree;k++)values.push(2*x*values[k-1]-values[k-2]);return values;}
 export function evalCheb(coefficients,x){let b1=0,b2=0;for(let k=coefficients.length-1;k>=1;k--){const b=2*x*b1-b2+coefficients[k];b2=b1;b1=b;}return x*b1-b2+coefficients[0];}
@@ -73,3 +74,4 @@ export function buildModels(example,degree=6,center=0){
 }
 export function errorMetrics(f,evaluate,count=1601){let squared=0,max=0;for(let i=0;i<count;i++){const x=-1+2*i/(count-1),e=Math.abs(f(x)-evaluate(x));squared+=e*e;max=Math.max(max,e);}return {rmse:Math.sqrt(squared/count),max};}
 export function fmt(value){if(value===null||value===undefined)return '—';if(Math.abs(value)<1e-12)return '≈ 0';if(Math.abs(value)>=1e4||Math.abs(value)<1e-4)return value.toExponential(2);return value.toLocaleString('en-US',{maximumFractionDigits:5});}
+
