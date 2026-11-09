@@ -1,0 +1,16 @@
+import {calculate,examples} from '../labs/sequences/math.mjs';
+import {partial} from '../labs/taylor/math.mjs';
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+const sequence=document.getElementById('sequence-preview'),taylor=document.getElementById('taylor-preview');
+const sequenceData=calculate(examples.find(e=>e.id==='harmonic'),40);
+let n=1,N=1,running=!reduced.matches,last=0,step=0;
+function context(canvas){const w=canvas.clientWidth,h=canvas.clientHeight,dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);const c=canvas.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);return {c,w,h};}
+function grid(c,x0,y0,w,h){c.lineWidth=1;c.strokeStyle='#edf0e9';for(let i=1;i<4;i++){c.beginPath();c.moveTo(x0+w*i/4,y0);c.lineTo(x0+w*i/4,y0+h);c.stroke();c.beginPath();c.moveTo(x0,y0+h*i/4);c.lineTo(x0+w,y0+h*i/4);c.stroke();}c.strokeStyle='#ccd8ca';c.beginPath();c.moveTo(x0,y0);c.lineTo(x0,y0+h);c.lineTo(x0+w,y0+h);c.stroke();}
+function drawSequence(){const {c,w,h}=context(sequence),left=26,top=22,pw=(w-78)/2,ph=h-50;grid(c,left,top,pw,ph);grid(c,left+pw+28,top,pw,ph);c.font='10px sans-serif';c.fillStyle='#2679a3';c.fillText('aₙ → 0',left,12);c.fillStyle='#c66a39';c.fillText('Sₙ → ∞',left+pw+28,12);for(const [key,offset,max,color] of [['terms',left,1.1,'#2679a3'],['sums',left+pw+28,4.7,'#c66a39']]){c.strokeStyle=color;c.globalAlpha=.25;c.beginPath();for(let i=1;i<=n;i++){const x=offset+pw*i/40,y=top+ph-ph*sequenceData[key][i]/max;if(i===1)c.moveTo(x,y);else c.lineTo(x,y);}c.stroke();c.globalAlpha=1;c.fillStyle=color;for(let i=1;i<=n;i++){c.beginPath();c.arc(offset+pw*i/40,top+ph-ph*sequenceData[key][i]/max,2,0,Math.PI*2);c.fill();}}document.getElementById('sequence-n').textContent='n = '+n;}
+function drawTaylor(){const {c,w,h}=context(taylor),left=26,top=14,pw=w-44,ph=h-37;grid(c,left,top,pw,ph);const x=v=>left+(v+4)*pw/8,y=v=>top+ph/2-v*ph/4;c.save();c.beginPath();c.rect(left,top,pw,ph);c.clip();c.strokeStyle='#a2af9b';c.setLineDash([4,4]);c.lineWidth=1.7;c.beginPath();for(let i=0;i<=240;i++){const z=-4+8*i/240;if(i===0)c.moveTo(x(z),y(Math.sin(z)));else c.lineTo(x(z),y(Math.sin(z)));}c.stroke();c.setLineDash([]);c.strokeStyle='#2679a3';c.lineWidth=2;c.beginPath();for(let i=0;i<=240;i++){const z=-4+8*i/240;if(i===0)c.moveTo(x(z),y(partial('sine',z,N)));else c.lineTo(x(z),y(partial('sine',z,N)));}c.stroke();c.restore();document.getElementById('taylor-n').textContent='N = '+N;}
+function update(){drawSequence();drawTaylor();}
+const button=document.getElementById('preview-play');function setRunning(value){running=value;button.textContent=value?'Ⅱ 미리보기 멈춤':'▶ 미리보기 재생';button.setAttribute('aria-pressed',String(value));last=performance.now();}
+button.addEventListener('click',()=>setRunning(!running));reduced.addEventListener('change',()=>{if(reduced.matches)setRunning(false);});
+const observer=new ResizeObserver(update);observer.observe(sequence);observer.observe(taylor);
+function frame(t){if(running&&!document.hidden&&t-last>=240){last=t;step++;n=step%48<40?step%48+1:40;N=Math.floor(step/5)%8+1;update();}requestAnimationFrame(frame);}
+setRunning(running);update();requestAnimationFrame(frame);

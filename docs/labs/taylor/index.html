@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5ef">
+  <title>급수가 움직이다 · Series in Motion</title>
+  <meta name="description" content="함수와 급수를 선택하고 부분합을 재생하며 수렴과 발산을 탐구하는 인터랙티브 미적분 실험실.">
+  <link rel="canonical" href="https://huhjeonggyu.github.io/math-lab/labs/taylor/">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+<header class="masthead">
+  <a class="brand" href="./" aria-label="급수가 움직이다 홈"><span class="brand-mark" aria-hidden="true">Σ</span><span>급수가 움직이다<small>SERIES IN MOTION</small></span></a>
+  <nav class="lab-nav" aria-label="실험실 이동"><a href="../../">← 전체 실험실</a><a href="../sequences/">수열 · 급수 ↗</a></nav>
+</header>
+<main>
+  <section class="intro"><p class="eyebrow">AN INTERACTIVE CALCULUS LAB</p><h1>한 항씩, 함수에 가까워지는 순간.</h1><p>급수를 고르고 재생해 보세요. 수렴도, 발산도 움직이면 보입니다.</p></section>
+  <div class="workspace">
+    <aside class="settings" aria-label="급수 선택과 설명">
+      <label class="field-label" for="preset">함수 · 급수 선택</label>
+      <select id="preset">
+        <option value="sine">sin x · 테일러 급수</option>
+        <option value="exponential">eˣ · 테일러 급수</option>
+        <option value="geometric">1 / (1 − x) · 등비급수</option>
+        <option value="logarithm">log(1 + x) · 테일러 급수</option>
+        <option value="arctangent">arctan x · 테일러 급수</option>
+        <option value="fourier">사각파 · 푸리에 급수</option>
+      </select>
+      <div class="series-info"><p id="series-tag" class="eyebrow"></p><h2 id="series-name"></h2><div class="formula" id="formula"></div><p id="convergence" class="convergence"></p></div>
+      <details class="observation" id="observation" open><summary>이렇게 관찰해 보세요</summary><p id="hint"></p><p id="detail" class="muted"></p></details>
+      <label class="field-label view-label" for="view">그래프 구간</label>
+      <select id="view"><option value="1">기본 구간</option><option value="0.5">원점 가까이</option><option value="1.5">더 넓게</option></select>
+    </aside>
+    <section class="stage" aria-label="부분합 애니메이션">
+      <div class="chart-heading"><div><span class="tiny-heading">PARTIAL SUM</span><h2>항을 더하면 어떤 모양이 될까?</h2></div><div class="n-badge"><span>항 개수</span><strong id="n-value">1</strong></div></div>
+      <div class="legend"><span><i class="sample partial"></i>부분합 S<sub>N</sub>(x)</span><span><i class="sample target"></i>비교 함수 f(x)</span><span id="band-legend" hidden><i class="band-sample"></i>수렴 구간</span></div>
+      <div class="plot-wrap"><canvas id="plot" role="img" aria-label="부분합과 비교 함수 그래프. 항 개수 슬라이더로 부분합을 바꿀 수 있습니다.">함수와 부분합을 비교하는 그래프입니다.</canvas></div>
+      <div class="chart-note"><span id="frame-status">부분합을 재생하는 중</span><span>재생 중 축 고정 · 화면 밖의 값은 잘려 보일 수 있어요</span></div>
+      <div class="transport">
+        <button id="play" class="primary" type="button" aria-pressed="true">Ⅱ 일시정지</button>
+        <button id="step" type="button">+1항</button>
+        <button id="restart" type="button">처음부터</button>
+        <label class="speed">속도 <select id="speed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+        <label class="loop"><input type="checkbox" id="loop" checked>반복</label>
+      </div>
+      <div class="scrubber"><label for="terms">항 개수 N <span>직접 움직여 보기</span></label><input id="terms" type="range" min="1" max="18" value="1" step="1"><div class="range-labels"><span>1</span><span id="max-label">18</span></div></div>
+      <section class="probe" aria-label="한 점에서 값 비교">
+        <div class="probe-control"><label for="probe">한 점에서 비교 <strong id="x-value">x = 2.00</strong></label><input type="range" id="probe" min="-6.3" max="6.3" step=".01" value="2"><span id="point-state"></span></div>
+        <div class="readout"><span>f(x)</span><strong id="target-value">—</strong></div>
+        <div class="readout"><span>S<sub>N</sub>(x)</span><strong id="partial-value">—</strong></div>
+        <div class="readout error"><span>절대 오차</span><strong id="error-value">—</strong></div>
+      </section>
+    </section>
+  </div>
+  <p class="bottom-note">N은 더한 항의 개수입니다. 급수의 수렴은 각 x에서 따로 판단합니다.</p>
+  <div id="announcement" class="sr-only" aria-live="polite"></div>
+</main>
+<noscript>그래프를 재생하려면 브라우저의 JavaScript를 켜 주세요.</noscript>
+</body></html>

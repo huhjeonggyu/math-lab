@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>수학 실험실 · Math Lab</title>
+ <meta name="description" content="수열과 급수, 테일러와 푸리에를 움직이는 그래프로 탐구하는 수학 실험실. 항을 더하고, 재생하고, 직접 비교해 보세요.">
+ <meta name="theme-color" content="#f4f5f0"><link rel="canonical" href="https://huhjeonggyu.github.io/math-lab/">
+ <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/home.css">
+ <script type="module" src="assets/home.mjs"></script>
+</head>
+<body>
+ <header><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">∑</span><span>수학 실험실 <small>MATH LAB</small></span></a><nav aria-label="주 메뉴"><a href="#labs">실험실 둘러보기</a><a href="https://github.com/huhjeonggyu/math-lab" target="_blank" rel="noopener">GitHub ↗</a></nav></header>
+ <main>
+  <section class="hero"><div><p class="eyebrow">MATHEMATICS, IN MOTION</p><h1>수학을,<br><em>움직여 보다.</em></h1><p class="lead">한 항씩 더하고, 잠깐 멈추고, 다시 비교해 보자.<br>식 속에 숨은 변화를 그래프에서 만나는 곳.</p><a class="jump" href="#labs">어떤 실험부터 해볼까? <span aria-hidden="true">↓</span></a></div><div class="hero-visual" aria-label="수열의 항을 더해 부분합을 만드는 관계"><div class="formula-label">작은 변화가 쌓이면</div><div class="formula-row"><span class="term">a<sub>1</sub></span><span>+</span><span class="term">a<sub>2</sub></span><span>+</span><span>⋯</span><span>+</span><span class="term">a<sub>n</sub></span></div><div class="sum-rule"><span></span><i>∑</i><span></span></div><div class="formula-result">S<sub>n</sub><span>하나의 새로운 이야기가 된다.</span></div><div class="visual-foot">OBSERVE · PLAY · UNDERSTAND</div></div></section>
+  <section id="labs" class="labs" aria-labelledby="labs-heading"><div class="section-heading"><div><p class="eyebrow">CHOOSE YOUR EXPERIMENT</p><h2 id="labs-heading">지금 열려 있는 실험실</h2></div><p>브라우저에서 바로 시작해.</p></div><div class="lab-grid">
+   <article class="lab-card sequence-card"><a class="card-link" href="labs/sequences/"><div class="card-top"><span class="lab-number">LAB 01</span><span class="count">8개 예제</span></div><div class="thumbnail"><canvas id="sequence-preview" role="img" aria-label="조화수열의 항은 0에 가까워지고 부분합은 계속 증가하는 미리보기"></canvas><div class="preview-legend"><span class="blue">● 항 aₙ</span><span class="orange">● 부분합 Sₙ</span><span id="sequence-n">n = 1</span></div></div><div class="card-copy"><p class="card-subtitle">항이 0으로 가면, 합도 수렴할까?</p><h3>수열과 급수</h3><p>각각의 항과 누적한 합을 나란히 보자.<br>수렴과 발산이 서로 다른 질문임을 확인해 봐.</p><div class="tags"><span>조화급수</span><span>등비급수</span><span>교대급수</span><span>ε 수렴 띠</span></div><div class="card-action">실험실 열기 <span aria-hidden="true">↗</span></div></div></a></article>
+   <article class="lab-card taylor-card"><a class="card-link" href="labs/taylor/"><div class="card-top"><span class="lab-number">LAB 02</span><span class="count">6개 예제</span></div><div class="thumbnail"><canvas id="taylor-preview" role="img" aria-label="사인 함수에 테일러 부분합이 가까워지는 미리보기"></canvas><div class="preview-legend"><span class="blue">● 부분합 Sₙ(x)</span><span class="gray">┄ 함수 f(x)</span><span id="taylor-n">N = 1</span></div></div><div class="card-copy"><p class="card-subtitle">항을 더할수록 함수와 닮아갈까?</p><h3>테일러와 푸리에</h3><p>부분합이 그리는 곡선의 변화를 따라가자.<br>어디서 가까워지고, 어디서 멀어지는지 살펴봐.</p><div class="tags"><span>테일러 전개</span><span>푸리에 급수</span><span>수렴 구간</span><span>근사 오차</span></div><div class="card-action">실험실 열기 <span aria-hidden="true">↗</span></div></div></a></article>
+  </div><div class="preview-controls"><span>카드 속 그래프도 실제 부분합으로 움직여.</span><button id="preview-play" type="button" aria-pressed="true">Ⅱ 미리보기 멈춤</button></div></section>
+  <section class="guide" aria-labelledby="guide-heading"><div><p class="eyebrow">HOW TO EXPLORE</p><h2 id="guide-heading">공식을 보기 전,<br>변화를 먼저 관찰해 봐.</h2></div><ol><li><span>01</span><div><strong>예제를 고르고</strong><p>서로 비슷해 보이는 두 예제를 비교해 봐.</p></div></li><li><span>02</span><div><strong>항을 하나씩 늘리고</strong><p>재생 속도와 슬라이더로 원하는 순간에 멈춰 봐.</p></div></li><li><span>03</span><div><strong>이유를 확인하기</strong><p>화면에서 본 현상을 수렴 조건과 연결해 봐.</p></div></li></ol></section>
+ </main>
+ <footer><span>MATH LAB · 움직이는 수학 실험실</span><a href="https://github.com/huhjeonggyu/math-lab" target="_blank" rel="noopener">소스 코드 보기 ↗</a></footer>
+</body>
+</html>
